@@ -107,17 +107,16 @@ def nneg (as : Binary n) : Binary n
   := inc (bneg as)
 
 @[simp]
-theorem nneg_eq_inc_bneg : nneg as = inc (bneg as) := by rfl
-
-@[simp]
 theorem nneg_nil : nneg nil = nil := by rfl
 
 @[simp]
 theorem nneg_cons_true : nneg (true ::b as) = true ::b (bneg as) := by
+  rw [nneg.eq_def]
   simp
 
 @[simp]
 theorem nneg_cons_false : nneg (false ::b as) = false ::b inc (bneg as) := by
+  rw [nneg.eq_def]
   simp
 
 -- Binary operations

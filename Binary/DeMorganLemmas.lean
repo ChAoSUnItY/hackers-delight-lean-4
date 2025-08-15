@@ -124,20 +124,24 @@ theorem bneg_add_eq_bneg_sub : bneg (as +b bs) = ((bneg as) -b bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
-    rw [@nneg_eq_inc_bneg]
     cases as with | cons a as'
     cases bs with | cons b bs'
+    -- Note: You can also find this theorem in AddLogicalLemmas.lean, this is
+    -- temporarily defined here to avoid circular dependency of namespaces.
+    have h : ∀ {n : ℕ} (xs: Binary n), nneg xs = inc (bneg xs) := by
+      intros
+      rfl
     match a, b with
-    | false, false => simp; rw [ih, nneg_eq_inc_bneg]
-    | false, true => simp; rw [ih, AddLemmas.rca_carry_trans_inc_right, nneg_eq_inc_bneg]
-    | true, false => simp; rw [ih, nneg_eq_inc_bneg]
+    | false, false => simp; rw [ih, h]
+    | false, true => simp; rw [ih, AddLemmas.rca_carry_trans_inc_right, h]
+    | true, false => simp; rw [ih, h]
     | true, true =>
       simp
       rw [
         AddLemmas.rca_lift_carry,
         bneg_inc_eq_bneg_dec,
         ih,
-        nneg_eq_inc_bneg,
+        h,
         AddLemmas.rca_lift_right_inc,
         Lemmas.of_dec_inc
       ]

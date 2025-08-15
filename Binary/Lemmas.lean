@@ -34,7 +34,7 @@ theorem bneg_zeros_eq_ones : bneg (zeros n) = ones n := by
 
 -- apply negates twice on binary gives the exact binary passed in
 @[simp]
-theorem of_bneg : bneg (bneg as) = as := by
+theorem of_bneg_bneg : bneg (bneg as) = as := by
   induction n with
   | zero => cases as; simp
   | succ n' ih =>
@@ -64,11 +64,28 @@ theorem of_dec_inc : dec (inc as) = as := by
   | nil => rfl
   | cons a _ => cases a <;> simp; congr
 
-@[simp]
 theorem inc_dec_swap : inc (dec as) = dec (inc as) := by
   induction as with
   | nil => rfl
   | cons a _ => cases a <;> simp
+
+theorem inc_inj : inc as = inc bs ↔ as = bs := by
+  constructor
+  · intro h
+    apply congrArg dec at h
+    repeat rw [of_dec_inc] at h
+    exact h
+  · intro h
+    rw [h]
+
+theorem dec_inj : dec as = dec bs ↔ as = bs := by
+  constructor
+  · intro h
+    apply congrArg inc at h
+    repeat rw [of_inc_dec] at h
+    exact h
+  · intro h
+    rw [h]
 
 -- numerical negation properties
 
