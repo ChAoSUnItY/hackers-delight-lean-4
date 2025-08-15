@@ -1,5 +1,6 @@
 import Binary.Def
 import Binary.Basic
+import Binary.Lemmas
 
 -- AddLemmas is responsible for ripple carry adder based addition theorems,
 -- this including raw boolean algebra level theorems, addition, and subtraction theorems.
@@ -80,10 +81,10 @@ theorem rca_carry_right_comm : rca as (rca bs cs c) c' = rca as (rca bs cs c') c
 
 -- rca-based addition properties
 
-theorem add_comm : as +b bs = bs +b as := by
-  rw [rca_comm]
+theorem add_comm : as + bs = bs + as := by
+  exact rca_comm
 
-theorem zero_add_eq_id : (zeros n) +b as = as := by
+theorem zero_add_eq_id : (zeros n) + as = as := by
   induction n with
   | zero => cases as; simp
   | succ n' ih =>
@@ -92,10 +93,10 @@ theorem zero_add_eq_id : (zeros n) +b as = as := by
     simp
     exact ih
 
-theorem add_zero_eq_id : as +b (zeros n) = as := by
+theorem add_zero_eq_id : as + (zeros n) = as := by
   rw [add_comm, zero_add_eq_id]
 
-theorem add_assoc : as +b (bs +b cs) = (as +b bs) +b cs := by
+theorem add_assoc : as + (bs + cs) = (as + bs) + cs := by
   induction n with
   | zero => cases as; cases bs; cases cs; simp
   | succ n' ih =>

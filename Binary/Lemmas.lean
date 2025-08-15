@@ -17,7 +17,7 @@ open Binary.Lemmas
 
 -- negates an all-flase-bit binary gives an all-true-bit binary
 @[simp]
-theorem bneg_ones_eq_zeros : bneg (ones n) = zeros n := by
+theorem bneg_ones_eq_zeros : (¬ (ones n)) = zeros n := by
   induction n with
   | zero => rfl
   | succ =>
@@ -25,7 +25,7 @@ theorem bneg_ones_eq_zeros : bneg (ones n) = zeros n := by
     congr
 
 @[simp]
-theorem bneg_zeros_eq_ones : bneg (zeros n) = ones n := by
+theorem bneg_zeros_eq_ones : (¬ (zeros n)) = ones n := by
   induction n with
   | zero => rfl
   | succ =>
@@ -34,7 +34,7 @@ theorem bneg_zeros_eq_ones : bneg (zeros n) = ones n := by
 
 -- apply negates twice on binary gives the exact binary passed in
 @[simp]
-theorem of_bneg_bneg : bneg (bneg as) = as := by
+theorem of_bneg_bneg : (¬ (¬ as)) = as := by
   induction n with
   | zero => cases as; simp
   | succ n' ih =>
@@ -90,10 +90,13 @@ theorem dec_inj : dec as = dec bs ↔ as = bs := by
 -- numerical negation properties
 
 @[simp]
-theorem of_nneg_nneg : nneg (nneg as) = as := by
+theorem of_nneg_nneg : -(- as) = as := by
   induction as with
   | nil => rfl
   | cons a _ => cases a <;> simp ; congr
+
+theorem nneg_eq_bneg_inc : -as = inc (¬as) := by
+  rfl
 
 end
 end Binary.Lemmas
