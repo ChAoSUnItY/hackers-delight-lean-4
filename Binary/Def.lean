@@ -8,6 +8,6 @@ abbrev Bit := Bool
 inductive Binary : Nat → Type where
   | nil : Binary 0
   | cons : Bit → {n : ℕ} → Binary n → Binary (n + 1)
-  deriving Repr
+  deriving Repr, DecidableEq
 
 infixr:67 " ::b " => Binary.cons

@@ -7,12 +7,7 @@ import Binary.Lemmas
 
 namespace Binary.AddLemmas
 
--- A gernerl tactic to simplify out base case of 2 binaries induction
-syntax "simp_nil" term : tactic
-macro_rules
-| `(tactic| simp_nil $as $bs) => `(tactic| cases ($as); cases ($bs); simp)
-
-variable {n : ℕ} {a b c c' : Bit} {as' bs' : Binary n.succ} {as bs cs : Binary n}
+variable {n : ℕ} {a b c c' : Bit} {as bs cs : Binary n}
 
 public section
 
@@ -20,24 +15,23 @@ open Binary.AddLemmas
 
 -- ripple carry adder properties
 
-theorem rca_no_carry : rca (a ::b as) (b ::b bs) false = (a ^^ b) ::b rca as bs (a ∧ b) := by
+theorem rca_no_carry : rca (a ::b as) (b ::b bs) false = (a ^^ b) ::b rca as bs (a && b) := by
   induction a <;> cases b <;> simp
 
 theorem rca_comm : rca as bs c = rca bs as c := by
   induction n generalizing c with
   | zero => simp_nil as bs
   | succ n' ih =>
-    cases as with | cons a _ =>
-    cases bs with | cons b _ =>
+    cases as with | cons a _
+    cases bs with | cons b _
     cases a <;> cases b <;> cases c <;> simp <;> rw [ih]
-
 
 theorem rca_carry_trans_inc_left : rca as bs true = rca (inc as) bs false := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
-    cases as with | cons a _ =>
-    cases bs with | cons b _ =>
+    cases as with | cons a _
+    cases bs with | cons b _
     cases a <;> cases b <;> simp <;> rw [ih]
 
 theorem rca_carry_trans_inc_right : rca as bs true = rca as (inc bs) false := by
@@ -47,16 +41,16 @@ theorem rca_lift_carry : rca as bs true = inc (rca as bs false) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
-    cases as with | cons a _ =>
-    cases bs with | cons b _ =>
+    cases as with | cons a _
+    cases bs with | cons b _
     cases a <;> cases b <;> simp <;> rw [ih]
 
 theorem rca_lift_left_inc : rca (inc as) bs c = inc (rca as bs c) := by
   induction n generalizing c with
   | zero => simp_nil as bs
   | succ n' ih =>
-    cases as with | cons a _ =>
-    cases bs with | cons b _ =>
+    cases as with | cons a _
+    cases bs with | cons b _
     cases a <;> cases b <;> cases c <;> simp
       <;> (try rw [rca_lift_carry]) <;> rw [ih]; rw [rca_lift_carry]
 
@@ -68,7 +62,7 @@ theorem rca_inc_comm : rca (inc as) bs c = rca as (inc bs) c := by
 
 theorem rca_carry_left_comm : rca (rca as bs c) cs c' = rca (rca as bs c') cs c := by
   induction n generalizing c c' with
-  | zero => cases as; cases bs; cases cs; simp
+  | zero => simp_nil as bs cs
   | succ n' ih =>
     cases as with | cons a as'
     cases bs with | cons b bs'
@@ -84,21 +78,37 @@ theorem rca_carry_right_comm : rca as (rca bs cs c) c' = rca as (rca bs cs c') c
 theorem add_comm : as + bs = bs + as := by
   exact rca_comm
 
+@[simp]
 theorem zero_add_eq_id : (zeros n) + as = as := by
   induction n with
-  | zero => cases as; simp
+  | zero => simp_nil as
   | succ n' ih =>
     cases as
     rw [zeros_cons, rca_no_carry]
     simp
     exact ih
 
+@[simp]
 theorem add_zero_eq_id : as + (zeros n) = as := by
   rw [add_comm, zero_add_eq_id]
 
+@[simp]
+theorem add_nneg_self_eq_zeros : as + -as = zeros n := by
+  induction n with
+  | zero => simp_nil as
+  | succ n' ih =>
+    cases as with | cons a as'
+    rw [zeros_cons]
+    cases a <;> simp <;> (try rw [rca_carry_trans_inc_right])
+      <;> rw [← Lemmas.nneg_eq_bneg_inc, ih]
+
+@[simp]
+theorem nneg_self_add_eq_zeros : -as + as = zeros n := by
+  rw [add_comm, add_nneg_self_eq_zeros]
+
 theorem add_assoc : as + (bs + cs) = (as + bs) + cs := by
   induction n with
-  | zero => cases as; cases bs; cases cs; simp
+  | zero => simp_nil as bs cs
   | succ n' ih =>
     cases as with | cons a as'
     cases bs with | cons b bs'

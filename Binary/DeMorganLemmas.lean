@@ -15,8 +15,8 @@ public section
 
 open Binary.DeMorganLemmas
 
--- ¬(x & y) = ¬x | ¬y
-theorem bneg_and_eq_bneg_or_bneg : (¬(as ∧ bs)) = (¬as ∨ ¬bs) := by
+-- ~(x & y) = ~x | ~y
+theorem bneg_and_eq_bneg_or_bneg : (~(as && bs)) = (~as || ~bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -25,8 +25,8 @@ theorem bneg_and_eq_bneg_or_bneg : (¬(as ∧ bs)) = (¬as ∨ ¬bs) := by
     simp
     exact ih
 
--- ¬(x | y) = ¬x & ¬y
-theorem bneg_or_eq_bneg_and_bneg : (¬(as ∨ bs)) = (¬as ∧ ¬bs) := by
+-- ~(x | y) = ~x & ~y
+theorem bneg_or_eq_bneg_and_bneg : (~(as || bs)) = (~as && ~bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -35,10 +35,10 @@ theorem bneg_or_eq_bneg_and_bneg : (¬(as ∨ bs)) = (¬as ∧ ¬bs) := by
     simp
     exact ih
 
--- ¬(x + 1) = ¬x - 1
+-- ~(x + 1) = ~x - 1
 theorem bneg_inc_eq_bneg_dec : bneg (inc as) = dec (bneg as) := by
   induction n with
-  | zero => cases as; simp
+  | zero => simp_nil as
   | succ n' ih =>
     cases as with | cons a as'
     simp
@@ -47,10 +47,10 @@ theorem bneg_inc_eq_bneg_dec : bneg (inc as) = dec (bneg as) := by
     · simp
       exact ih
 
--- ¬(x - 1) = ¬x + 1
+-- ~(x - 1) = ~x + 1
 theorem bneg_dec_eq_bneg_inc : bneg (dec as) = inc (bneg as) := by
   induction n with
-  | zero => cases as; simp
+  | zero => simp_nil as
   | succ n' ih =>
     cases as with | cons a as'
     simp
@@ -59,10 +59,10 @@ theorem bneg_dec_eq_bneg_inc : bneg (dec as) = inc (bneg as) := by
       exact ih
     · simp
 
--- ¬-x = x - 1
+-- ~-x = x - 1
 theorem bneg_nneg_eq_dec : bneg (nneg as) = dec as := by
   induction n with
-  | zero => cases as; simp
+  | zero => simp_nil as
   | succ n' ih =>
     cases as with | cons a as'
     cases a
@@ -71,8 +71,8 @@ theorem bneg_nneg_eq_dec : bneg (nneg as) = dec as := by
       simp
     · simp
 
--- ¬(x ⊕ y) = ¬x ⊕ y
-theorem bneg_xor_eq_bneg_xor : (¬(as ⊕ bs)) = ((¬as) ⊕ bs) := by
+-- ~(x ⊕ y) = ~x ⊕ y
+theorem bneg_xor_eq_bneg_xor : (~(as ⊕ bs)) = ((~as) ⊕ bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -81,8 +81,8 @@ theorem bneg_xor_eq_bneg_xor : (¬(as ⊕ bs)) = ((¬as) ⊕ bs) := by
     simp
     exact ih
 
--- ¬(x ⊕ y) = x ≡ y
-theorem bneg_xor_eq_beq : (¬(as ⊕ bs)) = (as ⊙ bs) := by
+-- ~(x ⊕ y) = x ≡ y
+theorem bneg_xor_eq_beq : (~(as ⊕ bs)) = (as ⊙ bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -93,8 +93,8 @@ theorem bneg_xor_eq_beq : (¬(as ⊕ bs)) = (as ⊙ bs) := by
     simp
     exact rfl
 
--- ¬(x ≡ y) = ¬x ≡ y
-theorem bneg_beq_eq_bneg_beq : (¬(as ⊙ bs)) = ((¬as) ⊙ bs) := by
+-- ~(x ≡ y) = ~x ≡ y
+theorem bneg_beq_eq_bneg_beq : (~(as ⊙ bs)) = ((~as) ⊙ bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -106,8 +106,8 @@ theorem bneg_beq_eq_bneg_beq : (¬(as ⊙ bs)) = ((¬as) ⊙ bs) := by
     · simp
     · simp
 
--- ¬(x ≡ y) = x ⊕ y
-theorem bneg_beq_eq_xor : (¬(as ⊙ bs)) = (as ⊕ bs) := by
+-- ~(x ≡ y) = x ⊕ y
+theorem bneg_beq_eq_xor : (~(as ⊙ bs)) = (as ⊕ bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -119,8 +119,8 @@ theorem bneg_beq_eq_xor : (¬(as ⊙ bs)) = (as ⊕ bs) := by
     · simp
     · simp
 
--- ¬(x + y) = x - y
-theorem bneg_add_eq_bneg_sub : (¬(as + bs)) = ((¬as) - bs) := by
+-- ~(x + y) = x - y
+theorem bneg_add_eq_bneg_sub : (~(as + bs)) = ((~as) - bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
@@ -141,12 +141,45 @@ theorem bneg_add_eq_bneg_sub : (¬(as + bs)) = ((¬as) - bs) := by
         Lemmas.of_dec_inc
       ]
 
--- ¬(x - y) = ¬x + y
-theorem bneg_sub_eq_bneg_add : (¬(as - bs)) = ((¬as) + bs) := by
+-- ~(x - y) = ~x + y
+theorem bneg_sub_eq_bneg_add : (~(as - bs)) = ((~as) + bs) := by
   induction n with
   | zero => simp_nil as bs
   | succ n' ih =>
     rw [bneg_add_eq_bneg_sub, Lemmas.of_nneg_nneg]
+
+-- Bonus theorems
+
+-- This proof is pain in the ass since we haven't define in its true form,
+-- which is supposed to be multiplication distributive, but it would do the job
+-- for now.
+theorem nneg_distrib : -(as + bs) = -as - bs := by
+  induction n with
+  | zero => simp_nil as bs
+  | succ n' ih =>
+    cases as with | cons a as'
+    cases bs with | cons b bs'
+    match a, b with
+    | false, false =>
+      simp_all [← Lemmas.nneg_eq_bneg_inc]
+    | false, true =>
+      rw [← Lemmas.inc_inj]
+      rw [← AddLemmas.rca_lift_right_inc]
+      simp_all [← Lemmas.nneg_eq_bneg_inc]
+    | true, false =>
+      rw [← Lemmas.inc_inj]
+      simp_all [← AddLemmas.rca_lift_left_inc, ← Lemmas.nneg_eq_bneg_inc]
+    | true, true =>
+      simp_all
+      conv =>
+        rhs
+        rw [AddLemmas.rca_lift_carry]
+      rw [← Lemmas.dec_inj]
+      simp_all [Lemmas.of_dec_inc]
+      rw [AddLemmas.rca_lift_carry, bneg_inc_eq_bneg_dec]
+      rw [← Lemmas.inc_inj, ← Lemmas.inc_inj, Lemmas.of_inc_dec]
+      rw [← Lemmas.nneg_eq_bneg_inc, ← AddLemmas.rca_lift_left_inc, ← AddLemmas.rca_lift_right_inc]
+      simp_all [← Lemmas.nneg_eq_bneg_inc]
 
 end
 end Binary.DeMorganLemmas
